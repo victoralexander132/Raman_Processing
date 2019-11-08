@@ -11,8 +11,6 @@
 # Importamos las librerìas necesarias
 from pathlib import Path
 home = str(Path.home())
-import sys
-sys.path.append(home+'/MEGA/UNAM/Tesis/Funciones')
 import Funcion as fun
 import numpy as np
 import matplotlib.pyplot as plt

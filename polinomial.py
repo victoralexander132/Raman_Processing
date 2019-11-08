@@ -11,8 +11,6 @@
 # Importamos las librerìas necesarias
 from pathlib import Path
 home = str(Path.home())
-import sys
-sys.path.append(home + '/MEGA/UNAM/Tesis/Funciones')
 import Funcion as fun
 import numpy as np
 import matplotlib.pyplot as plt
@@ -46,7 +44,7 @@ def polinomial(i_registro):
     order = 5
     yf = fun.lp(yc, fc, fs, order)
     # Filtramos el espectro de la base de datos para tener una comparación en condiciones similares
-    yR = fun.lowpass(yR, cutoff, fs, order)
+    yR = fun.lowpass(yR, fc, fs, order)
     # =========================================== Filtro
     # Eliminamos los valores negativos del espectro llevando el mínimo a cero
     yc = yf - np.amin(yf)
@@ -69,12 +67,12 @@ if __name__ == "__main__":
     datos = fun.datos_RRUFF(home + '/MEGA/UNAM/Tesis/Base_Datos/RRUFF_532.db')
     # Número total de espectros en la base de datos
     n_registros = len(datos)
-    # Inicializamos el arreglo para guardar los coeficientes de correlación
-    correlaciones = np.zeros((n_registros, grado_fin))
     # Grado inicial para el ajuste polinomial
     grado_ini = 1
     # Grado final para el ajuste polinomial
     grado_fin = 10
+    # Inicializamos el arreglo para guardar los coeficientes de correlación
+    correlaciones = np.zeros((n_registros, grado_fin))
 
     # ================================================ Multiprocesamiento
     p = []
@@ -126,7 +124,7 @@ if __name__ == "__main__":
         fs = 1000
         order = 5
         yf = fun.lp(yc, fc, fs, order)
-        yR = fun.lowpass(yR, cutoff, fs, order)
+        yR = fun.lowpass(yR, fc, fs, order)
         yc = yf - np.amin(yf)
         yc = fun.fac_re(yc, 1)
         yc /= np.amax(yc)
