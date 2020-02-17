@@ -27,15 +27,12 @@ Once Anaconda is installed, we can create our environment with a specific versio
 conda create -n raman python=3.7
 ```
 Change "raman" with the name you want for your new environment.
-
 When conda asks you to proceed, type y
-
-Then activate the environment with
+Then activate the environment with:
 ``` [bash]
 conda activate raman
 ```
-Now that we've activated the environment, we'll install the needed packages with the command
-
+Now that we've activated the environment, we'll install the needed packages with the command:
 ``` [bash]
 conda install <package name>
 ```
@@ -43,13 +40,11 @@ i.e.
 ``` [bash]
 conda install scipy
 ```
-To install obspy
-
+To install obspy:
 ```[bash]
 conda install -c conda-forge obspy
 ```
 When conda asks you to proceed, type y
-
 Fortunately, in order to install obspy, conda will install numpy, matplotlib and scipy
 
 ## Data
@@ -59,5 +54,3 @@ The files taken from the [RRUFF project](https://rruff.info/) were converted to 
 The script to transform the .txt files from RRUFF to a database file can be found [here.](https://mega.nz/#!7ip1CTII!JRqj3PvkAlISpwcmNoAFp_dnZucFP2IGwLdY1eUfQC0)
 
 However, if the user wants to work with a different set of spectral data, all the files from RRUFF can be found [here.](https://rruff.info/zipped_data_files/)
-
-
