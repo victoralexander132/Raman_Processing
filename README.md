@@ -48,7 +48,7 @@ When conda asks you to proceed, type y
 Fortunately, in order to install obspy, conda will install numpy, matplotlib and scipy
 
 ## Data
-The data used in this project is taken from the RRUFF™ project, and it can be found [here.](https://mega.nz/#!qnxDjJTQ!VX5XTlIOa-v-WYA58cEdWHJ7jJo5veWfCMgAtzbVpjI).
+The data used in this project is taken from the RRUFF™ project, and it can be found [here.](https://mega.nz/#!qnxDjJTQ!VX5XTlIOa-v-WYA58cEdWHJ7jJo5veWfCMgAtzbVpjI)
 
 The files taken from the [RRUFF project](https://rruff.info/) were converted to a .db file in order to be easier to work with in Python.
 The script to transform the .txt files from RRUFF to a database file can be found [here.](https://mega.nz/#!7ip1CTII!JRqj3PvkAlISpwcmNoAFp_dnZucFP2IGwLdY1eUfQC0)
