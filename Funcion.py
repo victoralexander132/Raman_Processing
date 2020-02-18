@@ -9,18 +9,43 @@
 
 """
 
+# Importamos las librerías necesarias
 import io
 import sqlite3
-
-import matplotlib.pyplot as plt
-# Importamos las librerías necesarias
-import numpy as np
 from scipy import interpolate
 from scipy.interpolate import interp1d
 from scipy.signal import butter, filtfilt, freqz
 from scipy.sparse import csc_matrix, diags, eye
 from scipy.sparse.linalg import spsolve
 from scipy.stats.stats import pearsonr
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Qt5Agg',warn=False, force=True)
+import numpy as np
+import time
+import tkinter as tk
+from tkinter import filedialog
+import multiprocessing as mp
+from pathlib import Path
+
+home = str(Path.home())
+params = {
+    'xtick.labelsize': 8,
+    'ytick.labelsize': 8,
+    'font.size': 8,
+    'figure.autolayout': True,
+    'figure.figsize': [7.2, 4.45],
+    'axes.titlesize': 9,
+    'axes.labelsize': 9,
+    'lines.linewidth': 1,
+    'lines.markersize': 1,
+    'legend.fontsize': 9,
+    'figure.figsize': [7.48, 7.48*(np.sqrt(5)-1.0)/2.0],
+    'axes.grid.which': 'minor',
+    'figure.dpi': 300.0,
+    'figure.autolayout': True,
+    'savefig.bbox': 'tight'
+}
 
 
 def adapt_array(arr):
@@ -68,26 +93,6 @@ def datos_RRUFF(ruta):
     # Cerramos la conexión de la base de datos
     conn.close()
     return data
-
-
-def butter_lowpass(cutoff, fs, order=4):
-    """
-    Función que calcula los coeficientes espectrales
-    de un filtro butterworth pasa bajas. 
-    """
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
-
-
-def lowpass(data, cutoff, fs, order=4):
-    """
-    Función que filtra una serie de datos con un filtro pasa-bajas.
-    """
-    b, a = butter_lowpass(cutoff, fs, order)
-    y = filtfilt(b, a, data)
-    return y
 
 
 def lp(y, fc, fs, order):
@@ -294,3 +299,5 @@ def mycorr(x, y, xR, yR):
     # Realizamos la correlación
     corr = pearsonr(y, yR)[0]
     return corr
+
+

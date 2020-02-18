@@ -1,21 +1,17 @@
-# ====================================================
-# Programa que corrige y compara un espectro de Raman 
-# desconocido contra una base de datos de referencia.
-# Utiliza la función airPLS para la
-# corrección por línea base.
-# 2019
-# Elaboró: Víctor Alexander
-# Supervisó: Dr. Josué Tago Pacheco
-# ====================================================
+"""
+====================================================
+Programa que corrige y compara un espectro de Raman
+desconocido contra una base de datos de referencia.
+Utiliza la función airPLS para la
+corrección por línea base.
+2019
+Elaboró: Víctor Alexander
+Supervisó: Dr. Josué Tago Pacheco
+====================================================
+"""
 
-# Importamos las librerìas necesarias
-from pathlib import Path
-home = str(Path.home())
-import Funcion as fun
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-import multiprocessing as mp
+# Importamos las funciones y librerías necesarias
+from Funcion import *
 
 
 def mp_airPLS(i_registro):
@@ -26,44 +22,51 @@ def mp_airPLS(i_registro):
     xR = np.copy(datos[i_registro][1])
     yR = np.copy(datos[i_registro][2])
     # Empatar dominio de los espectros a comparar
-    xc, yc, xR, yR = fun.fix_ind(x, y, xR, yR)
-    xc, yc, xR, yR = fun.fix_ind(xc, yc, xR, yR)
-    #============================================ Método
-    z = fun.my_airPLS(yc, lambda_=10, porder=6, itermax=5)
+    xc, yc, xR, yR = fix_ind(x, y, xR, yR)
+    xc, yc, xR, yR = fix_ind(xc, yc, xR, yR)
+    # ============================================ Método
+    z = my_airPLS(yc, lambda_=500, porder=1, itermax=1)
     yc = yc-z
     # ============================================ Método
     # =========================================== Filtro
-    #order = 4
-    #cutoff = 0.05
-    #fs = 1/(x[1]-x[0])       # sample rate, Hz
-    #yf = fun.lowpass(y, cutoff, fs, order)
     # Filtramos el espectro
-    fc = 30
     fs = 1000
-    order = 5
-    yf = fun.lp(yc, fc, fs, order)
+    fc = 50
+    order = 9
+    yf = lp(yc, fc, fs, order)
     # Filtramos el espectro de la base de datos para tener una comparación en condiciones similares
-    yR = fun.lp(yR, fc, fs, order)
-    #=========================================== Filtro
+    yR = lp(yR, fc, fs, order)
+    # =========================================== Filtro
     # Eliminamos los valores negativos del espectro llevando el mínimo a cero
     yc = yf-np.amin(yf)
     # Aplicamos un factor de relajación
-    yc = fun.fac_re(yc, 1)
+    yc = fac_re(yc, 1)
     # Normalizamos los espectros
     yc /= np.amax(yc)
     yR /= np.amax(yR)
-    return np.array(fun.mycorr(xc, yc, xR, yR))
+    return np.array(mycorr(xc, yc, xR, yR))
 
 
 if __name__ == "__main__":
+    plt.rcParams.update(params)
+    # Ventana para pedir archivo
+    ventana = tk.Tk()
+    # Impide que se muestre toda la GUI
+    ventana.withdraw()
+    # Ruta del espectro a analizar mediante selección del usuario
+    ruta = filedialog.askopenfilename(initialdir="Datos/",
+                                      title="Select file", filetypes=(("CSV files", "*.CSV"), ("all files", "*.*")))
+    f_name = ruta.split('/')[-2:]
+    f_name = f_name[0]+'_'+f_name[1]
+    f_name = f_name[0:-4]
+    print('=======================================')
+    print('Analizando: {}'.format(f_name))
     # Iniciamos contador de tiempo para medir el tiempo de ejecución
     start = time.time()
-    # Ruta del espectro a analizar
-    ruta = home+'/MEGA/UNAM/Tesis/Datos/INAH/TingL8 (oligoclasa).CSV'
     # Cargamos el espectro a analizar
     X, Y = np.loadtxt(ruta, unpack=True, comments='##', delimiter=',')
     # Almacenamos todos los espectros de la base de datos en una variable
-    datos = fun.datos_RRUFF(home+'/MEGA/UNAM/Tesis/Base_Datos/RRUFF_532.db')
+    datos = datos_RRUFF('RRUFF.db')
     # Número total de espectros en la base de datos
     n_registros = len(datos)
     # Inicializamos el arreglo para guardar los coeficientes de correlación
@@ -80,7 +83,7 @@ if __name__ == "__main__":
     imax = []
     max = []
     correlaciones = np.array(correlaciones)
-    for im in range(3):
+    for im in range(20):
         max.append(np.amax(correlaciones))
         imax.append(correlaciones.argmax())
         correlaciones[imax[im]] = 0
@@ -101,33 +104,34 @@ if __name__ == "__main__":
         y = np.copy(Y)
         xR = datos[registro][1]
         yR = datos[registro][2]
-        xc, yc, xR, yR = fun.fix_ind(x, y, xR, yR)
-        xc, yc, xR, yR = fun.fix_ind(xc, yc, xR, yR)
-        z = fun.my_airPLS(yc, lambda_=10, porder=6, itermax=5)
+        xc, yc, xR, yR = fix_ind(x, y, xR, yR)
+        xc, yc, xR, yR = fix_ind(xc, yc, xR, yR)
+        z = my_airPLS(yc, lambda_=500, porder=1, itermax=1)
         yc = yc - z
-        #order = 4
-        #cutoff = 0.05
-        #fs = 1/(x[1]-x[0])       # sample rate, Hz
-        #yf = fun.lowpass(y, cutoff, fs, order)
-        fc = 30
         fs = 1000
-        order = 5
-        yf = fun.lp(yc, fc, fs, order)
-        yR = fun.lp(yR, fc, fs, order)
+        fc = 50
+        order = 9
+        yf = lp(yc, fc, fs, order)
+        yR = lp(yR, fc, fs, order)
         yc = yf-np.amin(yf)
-        yc = fun.fac_re(yc, 1)
+        yc = fac_re(yc, 1)
         yc /= np.amax(yc)
         yR /= np.amax(yR)
         plt.subplot(2, 2, n + 2)
         plt.plot(xc, yc, label='Espectro corregido')
-        plt.plot(xR, yR, '.', label='Muestra: ' + nombre, markersize=2)
+        plt.plot(xR, yR, '.', label='Muestra: ' + nombre, markersize=1)
         plt.xlabel('Corrimiento Raman [cm⁻¹]')
         plt.title('Coeficiente de correlación: \n'+"%.4f" % max[n])
         plt.legend()
-    fig = plt.gcf()
-    fig.set_size_inches(10, 6)
-    plt.tight_layout()
-
+    plt.savefig('Images/airPLS/'+f_name+'.pdf')
     end = time.time()
+    print('Procesamiento terminado')
     print("Tiempo transcurrido: %3.3f" % (end - start)+" segundos")
+    print('=======================================')
+    print('Resultados\n')
+    for k in range(20):
+        k +=1
+        registro = imax[k-1]
+        nombre = datos[registro][0]
+        print('%2d'%k+'. '+nombre+' - %.4f' % max[k-1])
     plt.show()
