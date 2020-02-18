@@ -27,6 +27,7 @@ Once Anaconda is installed, we can create our environment with a specific versio
 conda create -n raman python=3.7
 ```
 Change "raman" with the name you want for your new environment.
+
 When conda asks you to proceed, type y.
 
 Then activate the environment with:
